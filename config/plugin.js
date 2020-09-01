@@ -6,4 +6,13 @@ module.exports = {
   // static: {
   //   enable: true,
   // }
+
+  mongoose: {
+    enable: true,
+    package: 'egg-mongoose',
+  },
+  validate: {
+    enable: true,
+    package: 'egg-validate',
+  },
 };

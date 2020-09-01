@@ -29,6 +29,16 @@ module.exports = appInfo => {
     secret: 'jsonwebtoken_secret',
   };
 
+  config.mongoose = {
+    url: 'mongodb://127.0.0.1:27017/zhihu-api',
+    options: {
+      useMongoClient: true,
+      autoReconnect: true,
+      reconnectTries: Number.MAX_VALUE,
+      bufferMaxEntries: 0,
+    },
+  };
+
   // add your middleware config here
   config.middleware = [
     'errorHandler',

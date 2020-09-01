@@ -14,16 +14,30 @@ module.exports = () => {
         ? 'Internal Server Error'
         : err.message;
 
-      // 从 error 对象上读出各个属性，设置到响应中
-      ctx.body = {
-        code: err.code || -1,
-        message: error,
-      };
+      // 用来配合console方法，直接返回data
+      if (err.console) {
+        if (!err.data) {
+          ctx.body = {
+            console: true,
+            data: err.data,
+          };
+        } else {
+          ctx.body = err.data;
+        }
+        return;
+      }
+
       // validate插件验证不通过时抛出422
       if (status === 422) {
         ctx.body = {
           code: err.code || -1,
           message: err.errors,
+        };
+      } else {
+        // 从 error 对象上读出各个属性，设置到响应中
+        ctx.body = {
+          code: err.code || -1,
+          message: error,
         };
       }
       ctx.status = status;

@@ -4,14 +4,11 @@ const Controller = require('egg').Controller;
 
 class UserController extends Controller {
   async index() {
-    const { ctx } = this;
-    const query = ctx.query;
-    const offset = Number(query.offset) || 0;
-    const limit = Number(query.limit) || this.app.config.pageSize;
-    ctx.result(await this.service.user.list(offset, limit));
+    const { ctx, service } = this;
+    ctx.result(await service.user.list(ctx.query));
   }
 
-  async get() {
+  async show() {
     const { ctx } = this;
     ctx.result({
       data: ctx.params.id,
@@ -20,17 +17,31 @@ class UserController extends Controller {
 
   async create() {
     const { ctx } = this;
-    ctx.body = ctx.request.body;
+    const payload = ctx.request.body || {};
+
+    ctx.body = { payload };
   }
 
   async update() {
     const { ctx } = this;
-    ctx.body = ctx;
+    const { id } = ctx.params;
+    const payload = ctx.request.body || {};
+
+    ctx.body = { id, payload };
   }
 
-  async delete() {
+  async remove() {
     const { ctx } = this;
-    ctx.body = ctx;
+    const { id } = ctx.params;
+
+    ctx.body = id;
+  }
+  async removes() {
+    const { ctx } = this;
+    const { ids } = ctx.request.body;
+    const payload = ids.split(',') || [];
+
+    ctx.body = payload;
   }
 
   async login() {

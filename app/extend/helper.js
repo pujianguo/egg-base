@@ -6,4 +6,9 @@ module.exports = {
     if (!string) return string;
     return parseInt(string) || 0;
   },
+
+  // 获取mongo查询参数
+  getListQueryForMongo(search, allowFields = []) {
+    console.log(search, allowFields);
+  },
 };
