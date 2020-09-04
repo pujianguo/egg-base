@@ -1,14 +1,9 @@
 'use strict';
 const Controller = require('egg').Controller;
-
+/**
+ * @Controller 角色管理
+ */
 class RoleController extends Controller {
-  constructor(ctx) {
-    super(ctx);
-    this.createRule = {
-      name: { type: 'string', required: true, allowEmpty: false },
-      access: { type: 'string', required: true, allowEmpty: false },
-    };
-  }
   async test() {
     const { service } = this;
     for (let i = 1; i <= 100; i++) {
@@ -19,12 +14,28 @@ class RoleController extends Controller {
     }
   }
 
+  /**
+   * @summary 获取角色列表
+   * @description 获取角色信息(分页/模糊)  获取角色信息
+   * @router get /roles
+   * @request query integer *offset eg:0 开始位置，默认0
+   * @request query integer *limit eg:10 单页数量，默认10
+   * @request query string name 按名称搜索字符串
+   * @request query boolean is_all eg:false 是否全部返回
+   * @response 200 queryRoleResponse 角色列表
+   */
   async index() {
     const { ctx, service } = this;
     ctx.result(await service.role.index(ctx.query));
   }
 
-  // 获取单个角色
+  /**
+   * @summary 获取单个角色
+   * @description 获取角色信息
+   * @router get /roles/{id}
+   * @request path string *id eg:1 角色id
+   * @response 200 getRoleResponse 角色信息
+   */
   async show() {
     const { ctx, service } = this;
     const { id } = ctx.params;
@@ -32,40 +43,67 @@ class RoleController extends Controller {
     ctx.result(res);
   }
 
-  // 创建角色
+  /**
+   * @summary 创建角色
+   * @description 创建角色
+   * @router post /roles
+   * @request body createRoleRequest *body
+   * @response 200 createdResponse 创建成功
+   */
   async create() {
     const { ctx, service } = this;
     const payload = ctx.request.body || {};
-    ctx.validate(this.createRule, payload);
-    const res = await service.role.create(payload);
-    ctx.result(res);
+    ctx.validate(ctx.rule.createRoleRequest, payload);
+    await service.role.create(payload);
+    ctx.success();
   }
 
-  // 修改角色
+  /**
+   * @summary 修改角色
+   * @description 获取角色信息
+   * @router put /roles
+   * @request path string *id
+   * @request body createRoleRequest *body
+   * @response 200 updatedResponse 修改成功
+   * @deprecated
+   * @ignore
+   */
   async update() {
     const { ctx, service } = this;
     const { id } = ctx.params;
     const payload = ctx.request.body || {};
-    ctx.validate(this.createRule, payload);
-    const res = await service.role.update(id, payload);
-    ctx.result(res);
+    ctx.validate(ctx.rule.createRoleRequest, payload);
+    await service.role.update(id, payload);
+    ctx.success();
   }
 
-  // 删除单个角色
+  /**
+   * @summary 删除单个角色
+   * @description 删除单个角色
+   * @router delete /roles/{id}
+   * @request path string *id eg:1 角色id
+   * @response 200 removedResponse 删除成功
+   */
   async remove() {
     const { ctx, service } = this;
     const { id } = ctx.params;
     await service.role.remove(id);
-    ctx.result();
+    ctx.success();
   }
 
-  // 删除所选角色(条件id[])
+  /**
+   * @summary 批量删除角色
+   * @description 批量删除角色
+   * @router delete /roles
+   * @request body batchRemoveRequest *ids
+   * @response 200 batchRemovedResponse 批量删除成功
+   */
   async removes() {
     const { ctx, service } = this;
     const { ids } = ctx.request.body;
     const payload = ids.split(',') || [];
     await service.role.removes(payload);
-    ctx.result();
+    ctx.success();
   }
 
 }

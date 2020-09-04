@@ -2,6 +2,12 @@
 
 // 这里的方法会绑定到ctx上
 module.exports = {
+  success() {
+    this.body = {
+      code: 0,
+      message: 'ok',
+    };
+  },
   result(data = 'ok') {
     this.body = data;
   },

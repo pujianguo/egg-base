@@ -32,11 +32,27 @@ module.exports = appInfo => {
   config.mongoose = {
     url: 'mongodb://127.0.0.1:27017/zhihu-api',
     options: {
-      useMongoClient: true,
       autoReconnect: true,
       reconnectTries: Number.MAX_VALUE,
       bufferMaxEntries: 0,
     },
+  };
+
+  // 接口文档地址：http://localhost:7001/swagger-ui.html#/
+  config.swaggerdoc = {
+    dirScanner: './app/controller',
+    apiInfo: {
+      title: '我的egg项目接⼝',
+      description: '我的egg项目接⼝ swagger-ui for egg',
+      version: '1.0.0',
+    },
+    schemes: [ 'http', 'https' ],
+    consumes: [ 'application/json' ],
+    produces: [ 'application/json' ],
+    enableSecurity: false,
+    enableValidate: true, // 当前版本不支持校验
+    routerMap: false, // 会根据controller中的注释信息自动生成路由
+    enable: true,
   };
 
   // add your middleware config here

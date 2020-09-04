@@ -1,7 +1,9 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-
+/**
+ * @Controller 用户管理
+ */
 class UserController extends Controller {
   async index() {
     const { ctx, service } = this;
@@ -15,6 +17,13 @@ class UserController extends Controller {
     });
   }
 
+  /**
+   * @summary 创建用户
+   * @description 创建用户，记录用户账户/密码/类型
+   * @router post /users
+   * @request body createUserRequest *body
+   * @response 200 createdResponse 创建成功
+   */
   async create() {
     const { ctx } = this;
     const payload = ctx.request.body || {};
@@ -30,6 +39,13 @@ class UserController extends Controller {
     ctx.body = { id, payload };
   }
 
+  /**
+   * @summary 删除单个用户
+   * @description 删除单个用户
+   * @router delete /users/{id}
+   * @request path string *id eg:1 用户ID
+   * @response 200 removedResponse 创建成功
+   */
   async remove() {
     const { ctx } = this;
     const { id } = ctx.params;

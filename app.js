@@ -1,9 +1,14 @@
 'use strict';
 module.exports = app => {
-  // app.beforeStart(async () => {
-  //   const ctx = app.createAnonymousContext();
-  //   console.log('beforeStart', ctx);
-  // });
+  app.beforeStart(async () => {
+    console.log('========Init Data=========');
+    // const ctx = app.createAnonymousContext();
+    // await ctx.model.User.remove();
+    // await ctx.service.user.create({
+    //   phone: '18919015125',
+    //   password: '123456',
+    // });
+  });
   // app.once('server', server => {
   //   // websocket
   // });
