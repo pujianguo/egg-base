@@ -9,17 +9,18 @@ class RoleService extends Service {
     if (!role) this.ctx.error(404, 'role not found');
     return role;
   }
-  async findByName(name) {
-    return await this.ctx.model.Role.findOne({ name });
+  async findByName(value) {
+    return await this.ctx.model.Role.findOne({ name: value });
   }
 
-  async index(payload) {
+  async list(payload) {
     const { ctx } = this;
-    let { offset, limit, ...search } = payload;
+    let { offset, limit, is_all, ...search } = payload;
     let res = [];
     let count = 0;
     offset = Number(offset) || 0;
     limit = Number(limit) || this.config.pageSize;
+    is_all = Boolean(is_all);
 
     const query = {};
     if (search.name) {
@@ -29,9 +30,15 @@ class RoleService extends Service {
       query.access = search.access;
     }
 
-    res = await ctx.model.Role.find(query).skip(offset).limit(limit)
-      .sort({ createdAt: -1 })
-      .exec();
+    if (!is_all) {
+      res = await ctx.model.Role.find(query).skip(offset).limit(limit)
+        .sort({ createdAt: -1 })
+        .exec();
+    } else {
+      res = await ctx.model.Role.find(query)
+        .sort({ createdAt: -1 })
+        .exec();
+    }
     count = await ctx.model.Role.count(query).exec();
 
     return { count, items: res };
@@ -39,14 +46,15 @@ class RoleService extends Service {
   async show(id) {
     return await this.find(id);
   }
-  async create(data) {
-    const role = await this.findByName(data.name);
-    if (role) this.ctx.error(420, '该角色已存在');
-    return await this.ctx.model.Role.create(data);
+  async create(payload) {
+    const { ctx } = this;
+    const role = await this.findByName(payload.name);
+    if (role) ctx.error(423, '该角色已存在');
+    return await ctx.model.Role.create(payload);
   }
   async update(id, data) {
     const { ctx } = this;
-    await this.find(id);
+    await this.find(id); // 检查是否存在
     return await ctx.model.Role.findByIdAndUpdate(id, data);
   }
 

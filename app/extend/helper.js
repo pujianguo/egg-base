@@ -1,12 +1,15 @@
 'use strict';
 
 const moment = require('moment');
+const crypto = require('crypto');
 
 module.exports = {
   formatMonth: t => (t ? moment(t).format('YYYY-MM') : ''),
   formatDate: t => (t ? moment(t).format('YYYY-MM-DD') : ''),
   formatMinute: t => (t ? moment(t).format('YYYY-MM-DD HH:mm') : ''),
   formatSecond: t => (t ? moment(t).format('YYYY-MM-DD HH:mm:ss') : ''),
+
+  crypto: data => crypto.createHmac('sha256', 'secret').update(data).digest('hex'),
 
   copy: data => JSON.parse(JSON.stringify(data)),
 

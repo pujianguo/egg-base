@@ -1,70 +1,73 @@
 'use strict';
 
-const crypto = require('crypto');
 const Service = require('egg').Service;
 
 class UserService extends Service {
-  async index(payload) {
+  // common function
+  async find(id) {
+    const user = await this.ctx.model.User.findById(id);
+    if (!user) this.ctx.error(404, 'user not found');
+    return user;
+  }
+  async findByPhone(value) {
+    return await this.ctx.model.User.findOne({ phone: value });
+  }
+
+  async list(payload) {
     const { ctx } = this;
-    let { offset, limit, ...search } = payload;
+    let { offset, limit, is_all, ...search } = payload;
     let res = [];
     let count = 0;
     offset = Number(offset) || 0;
     limit = Number(limit) || this.config.pageSize;
+    is_all = Boolean(is_all);
 
     const query = {};
-    if (search.name) {
-      query.name = { $regex: search.name }; // 模糊匹配
+    if (search.phone) {
+      query.phone = { $regex: search.phone };
     }
-    if (search.access) {
-      query.access = search.access;
+    if (search.realName) {
+      query.realName = { $regex: search.realName };
     }
 
-    res = await ctx.model.User.find(query).skip(offset).limit(limit)
-      .sort({ createdAt: -1 })
-      .exec();
+    if (!is_all) {
+      res = await ctx.model.User.find(query).skip(offset).limit(limit)
+        .sort({ createdAt: -1 })
+        .exec();
+    } else {
+      res = await ctx.model.User.find(query)
+        .sort({ createdAt: -1 })
+        .exec();
+    }
     count = await ctx.model.User.count(query).exec();
 
     return { count, items: res };
   }
-
-  async add(username, password) {
-    // 检测用户是否存在
-    const userInfo = await this.getUserInfoByUserName(username);
-    if (userInfo.token) this.ctx.error(400, '用户名已存在');
-
-    const newPwd = crypto.createHmac('sha256', passWord)
-      .update(this.app.config.user_pwd_salt_addition)
-      .digest('hex');
-
-    // 新增用户
-    const token = this.app.randomString();
-    const user = this.ctx.model.User();
-    user.user_name = userName;
-    user.pass_word = newPwd;
-    user.token = token;
-    user.usertoken = token;
-    user.create_time = new Date();
-    const result = await user.save() || {};
-    result.pass_word = '';
-
-    // 设置redis登录态
-    this.app.redis.set(`${token}_user_login`, JSON.stringify(result), 'EX', this.app.config.user_login_timeout);
-    // 设置登录cookie
-    this.ctx.cookies.set('usertoken', token, {
-      maxAge: this.app.config.user_login_timeout * 1000,
-      httpOnly: true,
-      encrypt: true,
-      signed: true,
-    });
-
-    return result;
+  async show(id) {
+    return await this.find(id);
   }
 
-  async getUserInfoByUserName(username) {
-    return await this.ctx.model.User.findOne({ username }).exec();
+  async create(payload) {
+    const { ctx } = this;
+    const user = await this.findByPhone(payload.phone);
+    if (user) ctx.error(423, '用户名已存在');
+    payload.password = ctx.helper.crypto(payload.password);
+    return ctx.model.User.create(payload);
   }
 
+  async update(id, payload) {
+    const { ctx } = this;
+    await this.find(id);
+    return await ctx.model.User.findByIdAndUpdate(id, payload);
+  }
+  async remove(id) {
+    const { ctx } = this;
+    await this.find(id);
+    return await ctx.model.User.findByIdAndRemove(id);
+  }
+  async removes(payload) {
+    return this.ctx.model.User.remove({ _id: { $in: payload } });
+  }
 }
 
 module.exports = UserService;

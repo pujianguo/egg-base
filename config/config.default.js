@@ -27,6 +27,7 @@ module.exports = appInfo => {
 
   config.jwt = {
     secret: 'jsonwebtoken_secret',
+    expires: '10h', // 有效时间
   };
 
   config.mongoose = {
@@ -59,15 +60,16 @@ module.exports = appInfo => {
   config.middleware = [
     'errorHandler',
     'notfoundHandler',
-    // 'auth',
+    'auth',
   ];
   // 只对 /api 前缀的 url 路径生效
   // config.errorHandler = {
   //   // match: '/api',
   // };
-  // config.auth = {
-  //   ignore: [ '/front/article', '/front/tag', '/api/login' ],
-  // };
+  config.auth = {
+    match: '/api',
+    // ignore: [ '/login', '/swagger-ui.html' ],
+  };
 
   // add your user config here
   const userConfig = {

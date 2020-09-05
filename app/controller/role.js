@@ -26,7 +26,7 @@ class RoleController extends Controller {
    */
   async index() {
     const { ctx, service } = this;
-    ctx.result(await service.role.index(ctx.query));
+    ctx.result(await service.role.list(ctx.query));
   }
 
   /**
@@ -65,8 +65,6 @@ class RoleController extends Controller {
    * @request path string *id
    * @request body createRoleRequest *body
    * @response 200 updatedResponse 修改成功
-   * @deprecated
-   * @ignore
    */
   async update() {
     const { ctx, service } = this;
@@ -105,8 +103,6 @@ class RoleController extends Controller {
     await service.role.removes(payload);
     ctx.success();
   }
-
 }
-
 
 module.exports = RoleController;
