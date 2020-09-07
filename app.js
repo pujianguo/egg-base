@@ -3,13 +3,14 @@ module.exports = app => {
   app.beforeStart(async () => {
     console.log('========Init Data=========');
     const ctx = app.createAnonymousContext();
+    // await ctx.model.User.dropCollection();
     // 创建初始化数据
     const user = await ctx.service.user.findByPhone('18919015125');
     if (!user) {
       await ctx.service.user.create({
         phone: '18919015125',
         password: '123456',
-        realName: 'raul',
+        name: 'raul',
       });
     }
   });

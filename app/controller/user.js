@@ -97,6 +97,43 @@ class UserController extends Controller {
     await service.user.removes(payload);
     ctx.success();
   }
+
+  /**
+   * @summary 关注
+   */
+  async following() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    await service.user.following(id);
+    ctx.success();
+  }
+  /**
+   * @summary 取消关注
+   */
+  async unfollowing() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    await service.user.unfollowing(id);
+    ctx.success();
+  }
+  /**
+   * @summary 获取某用户关注人列表
+   */
+  async listFollowing() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    const res = await service.user.listFollowing(id);
+    ctx.result(res);
+  }
+  /**
+   * @summary 获取某用户粉丝列表
+   */
+  async listFollowers() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    const res = await service.user.listFollowers(id);
+    ctx.result(res);
+  }
 }
 
 module.exports = UserController;

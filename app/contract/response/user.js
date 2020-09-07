@@ -4,7 +4,7 @@ module.exports = {
   user: {
     _id: { type: 'string', description: 'id 唯一键' },
     phone: { type: 'string', description: '手机' },
-    realName: { type: 'string', description: '用户姓名' },
+    name: { type: 'string', description: '用户姓名' },
     avatar: { type: 'string', description: '头像' },
   },
   queryUserResponse: {
@@ -14,7 +14,7 @@ module.exports = {
   getUserResponse: {
     id: { type: 'string', description: 'id 唯一键' },
     phone: { type: 'string', description: '手机' },
-    realName: { type: 'string', description: '用户姓名' },
+    name: { type: 'string', description: '用户姓名' },
     avatar: { type: 'string', description: '头像' },
     createdAt: { type: 'string', description: '创建时间' },
     updatedAt: { type: 'string', description: '修改时间' },
@@ -23,7 +23,7 @@ module.exports = {
   // loginResponse: {
   //   _id: { type: 'string', description: 'id 唯一键' },
   //   phone: { type: 'string', description: '手机' },
-  //   realName: { type: 'string', description: '用户姓名' },
+  //   name: { type: 'string', description: '用户姓名' },
   //   avatar: { type: 'string', description: '头像' },
   //   token: { type: 'string', description: 'Token' },
   // },

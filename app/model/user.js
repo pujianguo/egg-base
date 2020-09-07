@@ -2,15 +2,53 @@
 
 module.exports = app => {
   const mongoose = app.mongoose;
+  const Schema = mongoose.Schema;
   const UserSchema = new mongoose.Schema({
-    phone: { type: String, unique: true, required: true },
-    password: { type: String, required: true },
-    realName: { type: String, required: true },
-    role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role' },
-    avatar: { type: String, default: 'https://1.gravatar.com/avatar/a3e54af3cb6e157e496ae430aed4f4a3?s=96&d=mm' },
-    extra: { type: mongoose.Schema.Types.Mixed },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
-  });
+    name: { type: String, required: true },
+    phone: { type: String, required: true, unique: true },
+    password: { type: String, required: true, select: false },
+    avatar_url: { type: String },
+    gender: { type: String, enum: [ 'male', 'female' ], default: 'male', required: true },
+    headline: { type: String },
+    locations: { type: [{ type: Schema.Types.ObjectId, ref: 'Topic' }], select: false },
+    business: { type: Schema.Types.ObjectId, ref: 'Topic', select: false },
+    employments: {
+      type: [{
+        company: { type: Schema.Types.ObjectId, ref: 'Topic' },
+        job: { type: Schema.Types.ObjectId, ref: 'Topic' },
+      }],
+      select: false,
+    },
+    educations: {
+      type: [{
+        school: { type: Schema.Types.ObjectId, ref: 'Topic' },
+        major: { type: Schema.Types.ObjectId, ref: 'Topic' },
+        diploma: { type: Number, enum: [ 1, 2, 3, 4, 5 ] },
+        entrance_year: { type: Number },
+        graduation_year: { type: Number },
+      }],
+      select: false,
+    },
+    following: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+      select: false,
+    },
+    followingTopics: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'Topic' }],
+      select: false,
+    },
+    likingAnswers: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
+      select: false,
+    },
+    dislikingAnswers: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
+      select: false,
+    },
+    collectingAnswers: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
+      select: false,
+    },
+  }, { timestamps: true });
   return mongoose.model('User', UserSchema);
 };

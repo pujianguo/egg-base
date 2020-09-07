@@ -10,7 +10,7 @@ class UserService extends Service {
     return user;
   }
   async findByPhone(value) {
-    return await this.ctx.model.User.findOne({ phone: value });
+    return await this.ctx.model.User.findOne({ phone: value }).select('password');
   }
 
   async list(payload) {
@@ -26,8 +26,8 @@ class UserService extends Service {
     if (search.phone) {
       query.phone = { $regex: search.phone };
     }
-    if (search.realName) {
-      query.realName = { $regex: search.realName };
+    if (search.name) {
+      query.name = { $regex: search.name };
     }
 
     if (!is_all) {
@@ -50,9 +50,9 @@ class UserService extends Service {
   async create(payload) {
     const { ctx } = this;
     const user = await this.findByPhone(payload.phone);
-    if (user) ctx.error(423, '用户名已存在');
+    if (user) ctx.error(409, '用户名已存在');
     payload.password = ctx.helper.crypto(payload.password);
-    return ctx.model.User.create(payload);
+    return await ctx.model.User.create(payload);
   }
 
   async update(id, payload) {
@@ -67,6 +67,41 @@ class UserService extends Service {
   }
   async removes(payload) {
     return this.ctx.model.User.remove({ _id: { $in: payload } });
+  }
+
+  // 关注
+  async following(id) {
+    const { ctx } = this;
+    const userId = ctx.state.userId;
+    const me = await ctx.model.User.findById(ctx.state.userId).select('+following');
+    if (!me) ctx.error(404, 'user not found');
+    if (!me.following.map(id => id.toString()).includes(id)) {
+      me.following.push(id);
+      await ctx.model.User.findByIdAndUpdate(userId, { following: me.following });
+    }
+  }
+  // 取消关注
+  async unfollowing(id) {
+    const { ctx } = this;
+    const userId = ctx.state.userId;
+    const me = await ctx.model.User.findById(ctx.state.userId).select('+following');
+    if (!me) ctx.error(404, 'user not found');
+    const index = me.following.map(id => id.toString()).indexOf(id);
+    if (index > -1) {
+      me.following.splice(index, 1);
+      await ctx.model.User.findByIdAndUpdate(userId, { following: me.following });
+    }
+  }
+  // 获取关注人列表
+  async listFollowing(id) {
+    const user = await this.ctx.model.User.findById(id).select('+following').populate('following');
+    if (!user) this.ctx.error(404, 'user not found');
+    return user.following;
+  }
+  // 获取粉丝列表
+  async listFollowers(id) {
+    const users = await this.ctx.model.User.find({ following: id });
+    return users;
   }
 }
 

@@ -30,9 +30,9 @@ class AppBootHook {
     // const ctx = await this.app.createAnonymousContext();
     // await ctx.model.User.remove();
     // await ctx.service.user.create({
-    //   mobile: '18919015125',
+    //   phone: '18919015125',
     //   password: '123456',
-    //   realName: 'raul',
+    //   name: 'raul',
     // });
   }
   async serverDidReady() {
