@@ -5,7 +5,7 @@ const Service = require('egg').Service;
 class TopicService extends Service {
   // common function
   async find(id) {
-    const topic = await this.ctx.model.Topic.findById(id);
+    const topic = await this.ctx.model.Topic.findById(id).select('+introduction');
     if (!topic) this.ctx.error(404, 'topic not found');
     return topic;
   }
@@ -32,10 +32,12 @@ class TopicService extends Service {
 
     if (!is_all) {
       res = await ctx.model.Topic.find(query).skip(offset).limit(limit)
+        .select('+introduction')
         .sort({ createdAt: -1 })
         .exec();
     } else {
       res = await ctx.model.Topic.find(query)
+        .select('+introduction')
         .sort({ createdAt: -1 })
         .exec();
     }
@@ -49,7 +51,7 @@ class TopicService extends Service {
   async create(payload) {
     const { ctx } = this;
     const topic = await this.findByName(payload.name);
-    if (topic) ctx.error(423, '该角色已存在');
+    if (topic) ctx.error(423, '该话题已存在');
     return await ctx.model.Topic.create(payload);
   }
   async update(id, data) {
@@ -58,15 +60,18 @@ class TopicService extends Service {
     return await ctx.model.Topic.findByIdAndUpdate(id, data);
   }
 
-  async remove(id) {
-    const { ctx } = this;
-    await this.find(id);
-    // 不做存在判断时，不存在 findByIdAndRemove 任然返回true
-    return await ctx.model.Topic.findByIdAndRemove(id);
+  async listFollowers(id) {
+    await this.find(id); // 检查是否存在
+    const users = await this.ctx.model.User.find({ followingTopics: id });
+    return users;
   }
-  async removes(ids) {
-    return await this.ctx.model.Topic.remove({ _id: { $in: ids } });
+
+  async listQuestions(id) {
+    await this.find(id); // 检查是否存在
+    const users = await this.ctx.model.Question.find({ topics: id });
+    return users;
   }
+
 }
 
 module.exports = TopicService;

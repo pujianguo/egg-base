@@ -64,7 +64,7 @@ class UserController extends Controller {
     const { ctx, service } = this;
     const { id } = ctx.params;
     const payload = ctx.request.body || {};
-    ctx.validate(ctx.rule.createUserRequest, payload);
+    ctx.validate(ctx.rule.updateUserRequest, payload);
     await service.user.update(id, payload);
     ctx.success();
   }
@@ -134,6 +134,128 @@ class UserController extends Controller {
     const res = await service.user.listFollowers(id);
     ctx.result(res);
   }
+
+  /**
+   * @summary 关注的话题列表
+   */
+  async listFollowingTopics() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    const res = await service.user.listFollowingTopics(id);
+    ctx.result(res);
+  }
+  /**
+   * @summary 关注话题
+   */
+  async followTopics() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    await service.user.followTopics(id);
+    ctx.success();
+  }
+  /**
+   * @summary 取消关注话题
+   */
+  async unFollowTopics() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    await service.user.unFollowTopics(id);
+    ctx.success();
+  }
+
+  /**
+   * @summary 获取用户问题列表
+   */
+  async listQuestions() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    const res = await service.user.listQuestions(id);
+    ctx.result(res);
+  }
+
+  /**
+   * @summary 获取某用户点赞的答案
+   */
+  async listLikingAnswers() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    const res = await service.user.listLikingAnswers(id);
+    ctx.result(res);
+  }
+  /**
+   * @summary 点赞答案
+   */
+  async likeAnswer() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    await service.user.likeAnswer(id);
+    ctx.success();
+  }
+  /**
+   * @summary 取消点赞答案
+   */
+  async unlikeAnswer() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    await service.user.unlikeAnswer(id);
+    ctx.success();
+  }
+  /**
+   * @summary 获取某用户踩的答案
+   */
+  async listDislikingAnswers() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    const res = await service.user.listDislikingAnswers(id);
+    ctx.result(res);
+  }
+  /**
+   * @summary 踩答案
+   */
+  async dislikeAnswer() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    await service.user.dislikeAnswer(id);
+    ctx.success();
+  }
+  /**
+   * @summary 取消踩答案
+   */
+  async undislikeAnswer() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    await service.user.undislikeAnswer(id);
+    ctx.success();
+  }
+
+  /**
+   * @summary 获取某用户踩的答案
+   */
+  async listCollectingAnswers() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    const res = await service.user.listCollectingAnswers(id);
+    ctx.result(res);
+  }
+  /**
+   * @summary 踩答案
+   */
+  async collectAnswer() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    await service.user.collectAnswer(id);
+    ctx.success();
+  }
+  /**
+   * @summary 取消踩答案
+   */
+  async uncollectAnswer() {
+    const { ctx, service } = this;
+    const { id } = ctx.params;
+    await service.user.uncollectAnswer(id);
+    ctx.success();
+  }
+
 }
 
 module.exports = UserController;
